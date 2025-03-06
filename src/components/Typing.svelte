@@ -1,14 +1,18 @@
 <script>
     import { fetchRandomQuote } from "../utils/randomQuote.utils.js";
+    import { generateRandomNumber } from "../utils/randomNumber.utils.js"
+    import Icon from "./Icon.svelte";
+
     import { onMount } from "svelte";
     
-    let targetText = "Loading...";
+    let targetText;
     let userInput = "";
     let startTime = null;
     let timeElapsed = 0; // secondi
     let wpm = 0;
     let typingInterval;
     let isTypingCorrect = true;
+    let error = false;
 
     onMount(async () => {
         targetText = await fetchRandomQuote();
@@ -22,7 +26,7 @@
                     timeElapsed = (Date.now() - startTime) / 1000;
                     calculateSpeed();
                 }
-            }, 1) // ogni 1ms
+            }, 200) // ogni 1ms
         }
     }
 
@@ -40,11 +44,13 @@
         isTypingCorrect = targetText.startsWith(userInput) ? true : false
 
         if(userInput === targetText) {
-            stopTyping();
+            console.log("here, take it...")
+            clearInterval(typingInterval)
+            console.log("so basically", error)
+            error = true;
+            console.log("now tru", error)
         }
     }
-
-    const stopTyping = () => clearInterval(typingInterval);
 
     const handleCorrection = () => {
         if(!isTypingCorrect && targetText.startsWith(userInput)) {
@@ -59,37 +65,54 @@
 </script>
 
 <style>
+    * {
+        color: white;
+    }
     .wpm {
         font-size: 1.2rem;
         font-weight: bold;
     }
 </style>
 
-<div class="max-w-md mx-auto mt-10">
-    <h1 class="text-2xl font-bold text-center mb-5">type.</h1>
+<div class="w-full h-screen bg-blue-950">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl text-center py-5">type.</h1>
+        <div id="targetTextContainer" class="flex justify-center items-center">
+            {#if targetText}
+                <p class="text-wrap font-mono">{targetText}</p>
+            {:else}
+                <Icon icon="loading" class=""/>
+            {/if}
+        </div>
+
 
         <div id="typingContainer" class="flex justify-center items-center">
-            <div class="relative w-full mb-4">
+            <div class="relative w-full my-4">
                 <input 
                     bind:value={userInput}
                     on:input={handleInput}
                     on:blur={handleCorrection}
-                    class="w-full px-4 py-2 border rounded-md text-black focus:outline-none resize-none break-words whitespace-pre-wrap"
-                    style="background: {generateSVGBackground(targetText)} no-repeat; background-size: 100% auto;"
+                    id="{generateRandomNumber()}-input"
+                    class="w-full px-4 py-2 border-b-2 rounded-md focus:outline-none resize-none break-words whitespace-pre-wrap"
+                    style="color: black;"
                 />
         </div>
+        </div>
+    
+        {#if timeElapsed > 0}
+            <div class="mt-4 text-lg wpm">
+                <p class="text-center">{Math.round(wpm)} | {Math.round(timeElapsed)}s</p>
+            </div>
+        {/if}
+
+        {#if error}
+            <p>Ciaooo{error}</p>
+        {/if}
+
+        {#if userInput === targetText && targetText}
+            <div class="mt-4 text-center">
+            <p class="text-xl font-bold">iconToBe</p>
+            </div>
+        {/if}
     </div>
-
-    {#if timeElapsed > 0}
-        <div class="mt-4 text-lg wpm">
-            <p class="text-center font-semibold">wpm: {wpm}</p>
-            <p class="text-center">time: {timeElapsed}s</p>
-        </div>
-    {/if}
-
-    {#if userInput === targetText}
-        <div class="mt-4 text-center">
-        <p class="text-xl font-bold">pass!</p>
-        </div>
-    {/if}
 </div>

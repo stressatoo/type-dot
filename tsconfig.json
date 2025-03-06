@@ -4,6 +4,7 @@
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": false,
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "isolatedModules": true,
     "esModuleInterop": true,
