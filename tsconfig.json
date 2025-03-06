@@ -1,0 +1,17 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": false,
+    "moduleResolution": "NodeNext",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "target": "ES6",
+    "allowUmdGlobalAccess": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "importHelpers": true
+  },
+  "exclude": ["node_modules"]
+}
