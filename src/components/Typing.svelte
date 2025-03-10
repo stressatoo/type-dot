@@ -3,19 +3,28 @@
     import { generateRandomNumber } from "../utils/randomNumber.utils.js"
     import Icon from "./Icon.svelte";
 
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     
-    let targetText;
+    let targetText = "";
     let userInput = "";
     let startTime = null;
     let timeElapsed = 0; // secondi
     let wpm = 0;
     let typingInterval;
     let isTypingCorrect = true;
-    let error = false;
 
     onMount(async () => {
+        if(typeof window !== "undefined") {
+            window.addEventListener("keydown", handleKeydown);
+        }
         targetText = await fetchRandomQuote();
+
+    })
+
+    onDestroy(() => {
+        if(typeof window !== "undefined") {
+            window.removeEventListener("keydown", handleKeydown);
+        }
     })
 
     const startTyping = () => {
@@ -36,6 +45,7 @@
     }
 
     const handleInput = (event) => {
+        console.log(event.data)
         userInput = event.target.value;
 
         if(userInput.length > 0 && startTime === null)
@@ -44,11 +54,7 @@
         isTypingCorrect = targetText.startsWith(userInput) ? true : false
 
         if(userInput === targetText) {
-            console.log("here, take it...")
             clearInterval(typingInterval)
-            console.log("so basically", error)
-            error = true;
-            console.log("now tru", error)
         }
     }
 
@@ -58,30 +64,42 @@
         }
     }
 
-    const generateSVGBackground = (text) => {
-        const encodedText = encodeURIComponent(text);
-        return `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="5" y="19" style="font: bold 16px Arial;">${encodedText}</text></svg>')`;
-    };
-</script>
+    const handleKeydown = (event) => {
+        if(event.key === "Tab") {
+            event.preventDefault();
+            location.reload();
+        }
+    }
 
-<style>
-    * {
-        color: white;
+    $: getColor = (index) => {
+        console.log("Index:", index, "UserInput:", userInput);
+
+        if (index < userInput.length) {
+            if (userInput[index] === targetText[index]) {
+                return "text-green-400";  // Verde se corretto
+            } else {
+                return "text-red-500";  // Rosso se errato
+            }
+        } else {
+            // Se non è stato ancora digitato, colore grigio
+            return "text-gray-400";
+        }
     }
-    .wpm {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-</style>
+
+</script>
 
 <div class="w-full h-screen bg-blue-950">
     <div class="max-w-md mx-auto">
-        <h1 class="text-2xl text-center py-5">type.</h1>
+        <h1 class="text-2xl text-center py-5 text-white">type.</h1>
         <div id="targetTextContainer" class="flex justify-center items-center">
             {#if targetText}
-                <p class="text-wrap font-mono">{targetText}</p>
+                <p class="text-wrap font-mono">
+                    {#each targetText.split('') as char, i}
+                        <span class={getColor(i)}>{char}</span>
+                    {/each}
+                </p>
             {:else}
-                <Icon icon="loading" class=""/>
+                <Icon icon="loading" />
             {/if}
         </div>
 
@@ -89,6 +107,7 @@
         <div id="typingContainer" class="flex justify-center items-center">
             <div class="relative w-full my-4">
                 <input 
+                    type="text"
                     bind:value={userInput}
                     on:input={handleInput}
                     on:blur={handleCorrection}
@@ -101,17 +120,13 @@
     
         {#if timeElapsed > 0}
             <div class="mt-4 text-lg wpm">
-                <p class="text-center">{Math.round(wpm)} | {Math.round(timeElapsed)}s</p>
+                <p class="text-center text-white">{Math.round(wpm)} | {Math.round(timeElapsed)}s</p>
             </div>
         {/if}
 
-        {#if error}
-            <p>Ciaooo{error}</p>
-        {/if}
-
         {#if userInput === targetText && targetText}
-            <div class="mt-4 text-center">
-            <p class="text-xl font-bold">iconToBe</p>
+            <div class="mt-4 flex justify-center items-center">
+                <Icon icon="valid" color="white"/>
             </div>
         {/if}
     </div>

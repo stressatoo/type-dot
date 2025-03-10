@@ -1,0 +1,39 @@
+{
+    "workbench.colorTheme": "One Dark Pro Mix",
+    "svelte.enable-ts-plugin": true,
+    "workbench.iconTheme": "Monokai Pro Icons",
+    "security.workspace.trust.untrustedFiles": "open",
+    "prettier.documentSelectors": [
+        "**/*.astro",
+        "**/*.svelte"
+    ],
+    "git.blame.editorDecoration.enabled": true,
+
+    // we try to make semantic highlighting look good
+    "editor.semanticHighlighting.enabled": true,
+    // prevent VSCode from modifying the terminal colors
+    "terminal.integrated.minimumContrastRatio": 1,
+    // make the window's titlebar use the workbench colors
+    "window.titleBarStyle": "custom",
+
+      
+    "workbench.settings.applyToAllProfiles": [
+        
+    ],
+
+    // pink as the accent color
+    "catppuccin.accentColor": "sky",
+    "catppuccin.workbenchMode": "flat",
+    "diffEditor.ignoreTrimWhitespace": false,
+
+    // Set the font
+    "editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
+    // Set the font size
+    "editor.fontSize": 16,
+    // Turn on font ligatures
+    "editor.fontLigatures": true,
+    // Set letter spacing
+    "editor.letterSpacing": 0.4,
+    // Enable smooth scrolling in the editor
+    "editor.smoothScrolling": true,
+}

@@ -1,1 +1,1 @@
-export const generateRandomNumber = () => Math.round(Math.random() * 1000);
+export const generateRandomNumber = () => Math.round(Math.random() * 1000000);
