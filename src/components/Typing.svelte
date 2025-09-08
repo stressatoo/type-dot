@@ -1,6 +1,6 @@
 <script>
-    import { fetchRandomQuote } from "../utils/randomQuote.utils.js";
     import { generateRandomNumber } from "../utils/randomNumber.utils.js"
+    import { getRandomWords } from "../utils/randomWords.utils.js";
     import Icon from "./Icon.svelte";
     import { specialCharacters } from "../utils/const/specialCharacters.consts.js";
     import { testColors } from "../utils/const/colors.consts.js";
@@ -16,13 +16,13 @@
     let isTypingCorrect = true;
     let containerElement;
 
-    onMount(async () => {
+    onMount(() => {
         // per evitare problemi di astro, controlliamo che window sia definito
         if(typeof window !== "undefined") {
             window.addEventListener("keydown", handleKeydown);
             window.addEventListener("keypress", handleKeypress);
         }
-        targetText = await fetchRandomQuote();
+        targetText = getRandomWords(50);
         
         // focus sul container quando la pagina carica
         if (containerElement) {
@@ -79,7 +79,6 @@
         isTypingCorrect = targetText.startsWith(userInput);
         
         // check se l'utente ha completato il testo
-        // sì ? clear interval
         if (userInput === targetText) {
             clearInterval(typingInterval);
         }
@@ -130,7 +129,7 @@
 </script>
 
 <div class="w-full h-screen bg-blue-950">
-    <div class="max-w-md mx-auto">
+    <div class="max-w-3xl mx-auto">
         <h1 class="text-2xl text-center py-5 text-white">type.</h1>
         
         <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -145,7 +144,7 @@
         >
             {#if targetText}
                 <!-- Testo con cursore -->
-                <p class="text-wrap font-mono w-full relative break-all">
+                <p class="text-wrap font-mono w-full relative break-words">
                     {#each targetText.split('') as char, i}
                         <!-- se il cursore è visibile (showCursor(i)) -->
                         {#if showCursor(i)}
@@ -182,5 +181,4 @@
             <p>Clicca qui sopra e inizia a digitare. Premi Tab per ricominciare.</p>
         </div>
     </div>
-    
 </div>
